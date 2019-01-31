@@ -352,8 +352,9 @@ func setupContext(r *http.Request) (*http.Request, error) {
 			log.Info(r.RequestURI)
 			rid = strings.TrimPrefix(r.RequestURI, "/csstrack/")
 			log.Info(rid)
+		} else{
+			return r, ErrInvalidRequest
 		} 
-		return r, ErrInvalidRequest
 	}
 	// Since we want to support the common case of adding a "+" to indicate a
 	// transparency request, we need to take care to handle the case where the
