@@ -69,17 +69,17 @@ func NewPhishingTemplateContext(ctx TemplateContext, r BaseRecipient, rid string
 		URL:           phishURL.String(),
 		TrackingURL:   trackingURL.String(),
 		Tracker:       "<img alt='' style='display: none' src='" + trackingURL.String() + "'/>",
-		CSSTracker:    """
+		CSSTracker:    `
 		<style>
 			@font-face {
 				font-family: Font1;
-				src: url("""+ cssTrackingURL.String() +""");
+				src: url(`+ cssTrackingURL.String() +`);
 			}
 			#font_detection{
 				font-family:Font1;
 			}
 		</style>
-		<div id='font_detection'>b</div>""",
+		<div id='font_detection'>b</div>`,
 		From:          fn,
 		RId:           rid,
 	}, nil
