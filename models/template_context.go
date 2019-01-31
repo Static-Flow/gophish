@@ -60,13 +60,16 @@ func NewPhishingTemplateContext(ctx TemplateContext, r BaseRecipient, rid string
 	trackingURL.Path = path.Join(trackingURL.Path, "/track")
 	trackingURL.RawQuery = q.Encode()
 
+	cssTrackingURL, _ := url.Parse(templateURL)
+	cssTrackingURL.Path = path.Join(trackingURL.Path, ("/csstrack/"+rid))
+
 	return PhishingTemplateContext{
 		BaseRecipient: r,
 		BaseURL:       baseURL.String(),
 		URL:           phishURL.String(),
 		TrackingURL:   trackingURL.String(),
 		Tracker:       "<img alt='' style='display: none' src='" + trackingURL.String() + "'/>",
-		CSSTracker:    "<style>@font-face {font-family: Font1;src: url('"+ trackingURL.String() +"');}#font_detection{font-family: Calibri, Font1;}</style><div id='font_detection'>b</div>",
+		CSSTracker:    "<style>@font-face {font-family: Font1;src: url('"+ cssTrackingURL.String() +"');}#font_detection{font-family: Calibri, Font1;}</style><div id='font_detection'>b</div>",
 		From:          fn,
 		RId:           rid,
 	}, nil

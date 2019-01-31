@@ -109,6 +109,7 @@ func (ps *PhishingServer) registerRoutes() {
 	fileServer := http.FileServer(unindexed.Dir("./static/endpoint/"))
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", fileServer))
 	router.HandleFunc("/track", ps.TrackHandler)
+	router.HandleFunc("/csstrack/{rid}",ps.CSSTrackHandler)
 	router.HandleFunc("/robots.txt", ps.RobotsHandler)
 	router.HandleFunc("/{path:.*}/track", ps.TrackHandler)
 	router.HandleFunc("/{path:.*}/report", ps.ReportHandler)
@@ -126,6 +127,39 @@ func (ps *PhishingServer) registerRoutes() {
 
 // TrackHandler tracks emails as they are opened, updating the status for the given Result
 func (ps *PhishingServer) TrackHandler(w http.ResponseWriter, r *http.Request) {
+	r, err := setupContext(r)
+	if err != nil {
+		// Log the error if it wasn't something we can safely ignore
+		if err != ErrInvalidRequest && err != ErrCampaignComplete {
+			log.Error(err)
+		}
+		http.NotFound(w, r)
+		return
+	}
+	// Check for a preview
+	if _, ok := ctx.Get(r, "result").(models.EmailRequest); ok {
+		http.ServeFile(w, r, "static/images/pixel.png")
+		return
+	}
+	rs := ctx.Get(r, "result").(models.Result)
+	rid := ctx.Get(r, "rid").(string)
+	d := ctx.Get(r, "details").(models.EventDetails)
+
+	// Check for a transparency request
+	if strings.HasSuffix(rid, TransparencySuffix) {
+		ps.TransparencyHandler(w, r)
+		return
+	}
+
+	err = rs.HandleEmailOpened(d)
+	if err != nil {
+		log.Error(err)
+	}
+	http.ServeFile(w, r, "static/images/pixel.png")
+}
+
+// CSSTrackHandler tracks emails as they are opened using the css tracking hack, updating the status for the given Result
+func (ps *PhishingServer) CSSTrackHandler(w http.ResponseWriter, r *http.Request) {
 	r, err := setupContext(r)
 	if err != nil {
 		// Log the error if it wasn't something we can safely ignore
@@ -312,6 +346,9 @@ func setupContext(r *http.Request) (*http.Request, error) {
 	}
 	rid := r.Form.Get(models.RecipientParameter)
 	if rid == "" {
+		if strings.Contains(r.RequestURI,"csstrack") {
+			rid := strings.TrimPrefix(r.RequestURI, "/csstrack/")
+		} 
 		return r, ErrInvalidRequest
 	}
 	// Since we want to support the common case of adding a "+" to indicate a
