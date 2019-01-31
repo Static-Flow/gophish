@@ -61,7 +61,7 @@ func NewPhishingTemplateContext(ctx TemplateContext, r BaseRecipient, rid string
 	trackingURL.RawQuery = q.Encode()
 
 	cssTrackingURL, _ := url.Parse(templateURL)
-	cssTrackingURL.Path = path.Join(trackingURL.Path, ("/csstrack/"+rid))
+	cssTrackingURL.Path = path.Join(cssTrackingURL.Path, ("/csstrack/"+rid))
 
 	return PhishingTemplateContext{
 		BaseRecipient: r,

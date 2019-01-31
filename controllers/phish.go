@@ -345,9 +345,12 @@ func setupContext(r *http.Request) (*http.Request, error) {
 		return r, err
 	}
 	rid := r.Form.Get(models.RecipientParameter)
+	log.Info(rid)
 	if rid == "" {
 		if strings.Contains(r.RequestURI,"csstrack") {
+			log.Info(r.RequestURI)
 			rid = strings.TrimPrefix(r.RequestURI, "/csstrack/")
+			log.Info(rid)
 		} 
 		return r, ErrInvalidRequest
 	}
