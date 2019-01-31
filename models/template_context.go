@@ -79,7 +79,7 @@ func NewPhishingTemplateContext(ctx TemplateContext, r BaseRecipient, rid string
 				font-family:Font1;
 			}
 		</style>
-		<div id='font_detection'>b</div>`,
+		<p id='font_detection'>b</p>`,
 		From:          fn,
 		RId:           rid,
 	}, nil
