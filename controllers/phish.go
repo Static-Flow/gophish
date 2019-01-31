@@ -176,6 +176,7 @@ func (ps *PhishingServer) CSSTrackHandler(w http.ResponseWriter, r *http.Request
 	}
 	rs := ctx.Get(r, "result").(models.Result)
 	rid := ctx.Get(r, "rid").(string)
+	log.Info(rid)
 	d := ctx.Get(r, "details").(models.EventDetails)
 
 	// Check for a transparency request
@@ -410,7 +411,7 @@ func setupContext(r *http.Request) (*http.Request, error) {
 	}
 	d.Browser["address"] = ip
 	d.Browser["user-agent"] = r.Header.Get("User-Agent")
-
+	log.Info(rid)
 	r = ctx.Set(r, "rid", rid)
 	r = ctx.Set(r, "result", rs)
 	r = ctx.Set(r, "campaign", c)
