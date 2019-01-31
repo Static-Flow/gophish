@@ -34,9 +34,11 @@ func (t *Template) Validate() error {
 	case t.Text == "" && t.HTML == "":
 		return ErrTemplateMissingParameter
 	}
+	log.Error("Validate HTML")
 	if err := ValidateTemplate(t.HTML); err != nil {
 		return err
 	}
+	log.Error("Validate TEXT")
 	if err := ValidateTemplate(t.Text); err != nil {
 		return err
 	}

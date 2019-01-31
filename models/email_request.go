@@ -29,6 +29,7 @@ type EmailRequest struct {
 	SMTP        SMTP         `json:"smtp"`
 	URL         string       `json:"url"`
 	Tracker     string       `json:"tracker" gorm:"-"`
+	CSSTracker  string       `json:"cssTracker" gorm:"-"`
 	TrackingURL string       `json:"tracking_url" gorm:"-"`
 	UserId      int64        `json:"-"`
 	ErrorChan   chan (error) `json:"-" gorm:"-"`

@@ -278,6 +278,7 @@ func (as *AdminServer) APITemplates(w http.ResponseWriter, r *http.Request) {
 	//POST: Create a new template and return it as JSON
 	case r.Method == "POST":
 		t := models.Template{}
+		log.Info(t)
 		// Put the request into a template
 		err := json.NewDecoder(r.Body).Decode(&t)
 		if err != nil {

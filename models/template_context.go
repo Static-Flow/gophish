@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"path"
 	"text/template"
+	log "github.com/gophish/gophish/logger"
 )
 
 // TemplateContext is an interface that allows both campaigns and email
@@ -21,6 +22,7 @@ type PhishingTemplateContext struct {
 	From        string
 	URL         string
 	Tracker     string
+	CSSTracker  string
 	TrackingURL string
 	RId         string
 	BaseURL     string
@@ -58,12 +60,14 @@ func NewPhishingTemplateContext(ctx TemplateContext, r BaseRecipient, rid string
 	trackingURL.Path = path.Join(trackingURL.Path, "/track")
 	trackingURL.RawQuery = q.Encode()
 
+	//"<style>@font-face {font-family: Font1;src: url('"+ trackingURL.String() +"');}#font_detection{font-family: Calibri, Font1;}</style><div id='font_detection'> </div>"
 	return PhishingTemplateContext{
 		BaseRecipient: r,
 		BaseURL:       baseURL.String(),
 		URL:           phishURL.String(),
 		TrackingURL:   trackingURL.String(),
 		Tracker:       "<img alt='' style='display: none' src='" + trackingURL.String() + "'/>",
+		CSSTracker:    "<img alt='' style='display: none' src='" + trackingURL.String() + "'/>",
 		From:          fn,
 		RId:           rid,
 	}, nil
@@ -74,6 +78,7 @@ func NewPhishingTemplateContext(ctx TemplateContext, r BaseRecipient, rid string
 func ExecuteTemplate(text string, data interface{}) (string, error) {
 	buff := bytes.Buffer{}
 	tmpl, err := template.New("template").Parse(text)
+	log.Error(tmpl)
 	if err != nil {
 		return buff.String(), err
 	}
@@ -112,6 +117,7 @@ func ValidateTemplate(text string) error {
 		RId: "123456",
 	}
 	ptx, err := NewPhishingTemplateContext(vc, td.BaseRecipient, td.RId)
+	log.Error(ptx)
 	if err != nil {
 		return err
 	}

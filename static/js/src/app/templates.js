@@ -23,7 +23,7 @@ function save(idx) {
     template.html = CKEDITOR.instances["html_editor"].getData();
     // Fix the URL Scheme added by CKEditor (until we can remove it from the plugin)
     template.html = template.html.replace(/https?:\/\/{{\.URL}}/gi, "{{.URL}}")
-    // If the "Add Tracker Image" checkbox is checked, add the tracker
+    // If the "Add Tracker Image" checkbox is checked, add the tracker 
     if ($("#use_tracker_checkbox").prop("checked")) {
         if (template.html.indexOf("{{.Tracker}}") == -1 &&
             template.html.indexOf("{{.TrackingUrl}}") == -1) {
@@ -31,7 +31,16 @@ function save(idx) {
         }
     } else {
         // Otherwise, remove the tracker
-        template.html = template.html.replace("{{.Tracker}}</body>", "</body>")
+        template.html = template.html.replace("{{.Tracker}}", "")
+    }
+    if ($("#use_css_tracker_checkbox").prop("checked")) {
+        if (template.html.indexOf("{{.CSSTracker}}") == -1 &&
+            template.html.indexOf("{{.CSSTrackingUrl}}") == -1) {
+            template.html = template.html.replace("</body>", "{{.CSSTracker}}</body>")
+        }
+    } else {
+        // Otherwise, remove the tracker
+        template.html = template.html.replace("{{.CSSTracker}}", "")
     }
     template.text = $("#text_editor").val()
     // Add the attachments
@@ -205,6 +214,11 @@ function edit(idx) {
         } else {
             $("#use_tracker_checkbox").prop("checked", false)
         }
+        if (template.html.indexOf("{{.CSSTracker}}") != -1) {
+            $("#use_css_tracker_checkbox").prop("checked", true)
+        } else {
+            $("#use_css_tracker_checkbox").prop("checked", false)
+        }
 
     }
     // Handle Deletion
@@ -267,6 +281,11 @@ function copy(idx) {
     } else {
         $("#use_tracker_checkbox").prop("checked", false)
     }
+    if (template.html.indexOf("{{.CSSTracker}}") != -1) {
+            $("#use_css_tracker_checkbox").prop("checked", true)
+        } else {
+            $("#use_css_tracker_checkbox").prop("checked", false)
+        }
 }
 
 function importEmail() {
